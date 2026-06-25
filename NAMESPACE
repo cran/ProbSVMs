@@ -1,0 +1,20 @@
+useDynLib(ProbSVMs, .registration=TRUE)
+
+import(Rcpp)
+import(lpSolveAPI)
+import(ggplot2)
+importFrom(kernlab,ksvm,as.kernelMatrix,SVindex)
+importMethodsFrom(kernlab,predict)
+importFrom(stats, dist, median, model.matrix, na.omit, predict, quantile, runif, var, prcomp)
+importFrom(MASS, lda)
+importFrom(reshape2, melt)
+
+export(trainSVM,trainPVM,GetrbfdotSigPar,makeKMat)
+exportPattern("*.kernelSVM")
+exportPattern("*.kernelSVMs")
+exportPattern("*.PVM")
+exportPattern("*.ClassProb")
+
+S3method(predict, PVM)
+S3method(predict, kernelSVM)
+S3method(plot, ClassProb)
