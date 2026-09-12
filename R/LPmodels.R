@@ -2,13 +2,13 @@ require(lpSolveAPI)
 
 LPdual <- function(Yhat,grid,eta=15.,epsilon=min(grid)/2)
 {
-  if ( !is.numeric(epsilon) || length(epsilon) > 1 || epsilon[1] < 0 || epsilon[1] > 1) 
+  if ( !is.numeric(epsilon) || length(epsilon) > 1 || epsilon[1] < 0 || epsilon[1] > 1)
     stop("Wrong value for argument epsilon\n")
   if (!is.matrix(grid)) {
     if  (!is.data.frame(grid)) stop("Argument grid is not a matrix neither a data frame\n")
     grid <- as.matrix(grid)
   }
-  if (!is.factor(Yhat)) stop("Argument Yhat is not a factor as it should be\n")
+#  if (!is.factor(Yhat)) stop("Argument Yhat is not a factor as it should be\n")
   Yhat <- unclass(Yhat)
 
   k <- ncol(grid)

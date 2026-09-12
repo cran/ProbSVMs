@@ -152,7 +152,10 @@ trainSVM <- function(x=NULL, y, class.weights=rep(1.,length(levels(y))), scaled=
               else  if (OptCntrl$start=="warmstarts") OptCntrlstart <- 3
                     else stop("Wrong value for component start of the OptCntrl list\n")
 
+  if (is.null(x)) scale <- NULL 
+  else scale <- attr(x,"scaled:scale")
   if (!keepdt) x <- NULL
+  
   if (!is.matrix(class.weights)) class.weights <- matrix(class.weights,nrow=1)
   nsvms <- nrow(class.weights)
   if (is.numeric(lambda)) {
@@ -166,7 +169,8 @@ trainSVM <- function(x=NULL, y, class.weights=rep(1.,length(levels(y))), scaled=
 
       alphaMat <- alphacnv(tmpres$alpha,y,loss)
       res <- list( alpha=alphaMat, grplvls=ylvls, lambda=lambda, C=C,
-                    x=x, scale=attr(x,"scaled:scale"), kernel=kernel, kpar=kpar
+#                    x=x, scale=attr(x,"scaled:scale"), kernel=kernel, kpar=kpar
+                    x=x, scale=scale, kernel=kernel, kpar=kpar
                   )
       if (retotpst) res$optlist <- list(optvalue=tmpres$fval,iterations=tmpres$iter,hitrate=NULL)
       class(res) <-"kernelSVM"
@@ -175,7 +179,8 @@ trainSVM <- function(x=NULL, y, class.weights=rep(1.,length(levels(y))), scaled=
       alphaArray <- array(dim=c(n,k,nsvms))
       for (svm in 1:nsvms)  alphaArray[,,svm] <- alphacnv(tmpres[svm,],y,loss)
       res <- list( alpha=alphaArray, grplvls=ylvls, lambda=lambda, C=C,
-                  x=x, scale=attr(x,"scaled:scale"), kernel=kernel, kpar=kpar
+#                  x=x, scale=attr(x,"scaled:scale"), kernel=kernel, kpar=kpar
+                  x=x, scale=scale, kernel=kernel, kpar=kpar
                   )
       if (retotpst) res$optlist <- list(optvalue=NULL,iterations=NULL,hitrate=NULL)
       class(res) <-c("kernelSVMs","kernelSVM")
@@ -193,7 +198,8 @@ trainSVM <- function(x=NULL, y, class.weights=rep(1.,length(levels(y))), scaled=
     if (is.null(tmpres)) return(NULL)                  # To do: change this to exit with an warning when called on its own, and exit gracefully otherwise !!!
     alphaMat <- matrix(tmpres$alpha,nrow=n,ncol=k)
     res <- list( alpha=alphaMat, grplvls=ylvls, lambda=1/(2*n*tmpres$bestC), C=tmpres$bestC,
-                 x=x, scale=attr(x,"scaled:scale"), kernel=kernel, kpar=kpar
+#                 x=x, scale=attr(x,"scaled:scale"), kernel=kernel, kpar=kpar
+                 x=x, scale=scale, kernel=kernel, kpar=kpar
                 )
     if (retotpst) res$optlist <-  list(optvalue=tmpres$fval,iterations=tmpres$iter,hitrate=tmpres$hitrate)
 

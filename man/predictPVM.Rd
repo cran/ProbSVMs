@@ -6,13 +6,11 @@
 
 \description{predict class probabilities based on objects of class 'PVM'.}
 
-
 \usage{
 
-\method{predict}{PVM}(object, \dots, newdata, eta=15., probepsilon="adjtogrid", 
+\method{predict}{PVM}(object, \dots, newdata, eta="adjtogrid", probepsilon="adjtogrid", 
 trndt=NULL, retallprd=FALSE, newdataasKmat=FALSE)
 }
-
 
 \arguments{
 
@@ -32,8 +30,10 @@ trndt=NULL, retallprd=FALSE, newdataasKmat=FALSE)
    \item{eta}{value of the eta hyper-parameter used in the conversion of SVM(s)
      predictions to class probabilities. It gives the relative importance of
      undesirable versus desirable \eqn{l_1} norm deviations in the goodness of fit
-     criterion optimized to find these probabilities. See reference [1] for further
-     details.}
+     criterion optimized to find these probabilities. When set to the string \dQuote{adjtogrid}
+     (default) it ensures that the undesirable deviations dominate the desirable ones, which is
+     necessary for the consistency properties of the resulting estimators. See reference [1] 
+     for further details.}
 
    \item{probepsilon}{the minimum possible value for the class probabilities estimated 
      by \code{predict.PVM}. It could be either the string \dQuote{adjtogrid} (default),
@@ -45,10 +45,13 @@ trndt=NULL, retallprd=FALSE, newdataasKmat=FALSE)
      for the correspondig attribute vector values. See reference [1] for furhter
      discussion.}
      
-  \item{trndt}{either a matrix or data frame with the training data (with
+  \item{trndt}{either a NULL value,  a matrix or data frame with the training data (with
     observations in rows and variables in columns) or the string
     \dQuote{newdata}, if (and only if) class probabilites are to be computed
-    for the same data as the one used for training.}
+    for the same data as the one used for training. When equal to NULL the training data
+    will be retrieved from the value of argument object (if argument newdataasKmat is set
+    to FALSE), or assumed to be already used in the computation of the kernel matrix given 
+    by argument newdata (if argument newdataasKmat is set to TRUE) }
 
   \item{retallprd}{a boolean flag stating if all weigthed SVM predctions
     should be returned together with the estimated class probabilites.}
@@ -82,6 +85,9 @@ Research}, Vol. 183, 107203. <doi:10.1016/j.cor.2025.107203>
 \examples{
 
 \donttest{
+
+set.seed(1)  # Fix the seed in order to get reproducible results
+             # (given the the building ot the grid matrix has a random component)  
 
 ## The following examples are based on the MASS data set "crabs".
 # This data records physical measurements on 200 specimens of
@@ -120,7 +126,7 @@ trdata <- crabs[c(1:45,51:95,101:145,151:195),10:14]
 trgrp <- crabs$grp[c(1:45,51:95,101:145,151:195)]
 evaldata <- crabs[c(46:50,96:100,146:150,196:200),10:14]
 WWpvm1 <- trainPVM(trdata,trgrp)
-WWprob1 <- predict(WWpvm1,newdata=evaldata,trndt=trdata)
+WWprob1 <- predict(WWpvm1,newdata=evaldata)
 
 plot(WWprob1, type="stckdbarplt")
 WWprob1

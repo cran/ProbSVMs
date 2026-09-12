@@ -1,11 +1,11 @@
 require(kernlab)
 
-trainPVM <- function(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"), withbias=(length(levels(y))==2),
+trainPVM <- function(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"), withbias=FALSE,
                     kernel=c("rbfdot","vanilladot","polydot"), kpar=list(sigma="d2median"),
                     C=0.25, lambda=NULL, tunex=x, tuney=y, tuneK=K,
                     grid=NULL, dpiinv=ceiling(sqrt(length(y))/0.2), keepdt=TRUE, ... )
 {
-  maxn <- 10000    # Review this limite later, particularly when cached implementations becoma available
+  maxn <- 10000    # Review this limite later, particularly when cached implementations become available
 
   loss <- match.arg(loss)
   if (is.null(K)) kernel <- match.arg(kernel)
@@ -122,7 +122,8 @@ trainPVM <- function(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"), withbia
     lambda <- 1/(2*n*bestC)
   }
 
-  PVM <- list(nclasses=k,kernel=kernel,kpar=kpar,grid=grid)
+#  PVM <- list(nclasses=k,kernel=kernel,kpar=kpar,grid=grid)
+  PVM <- list(nclasses=k,kernel=kernel,kpar=kpar,grid=grid,scale=attr(x,"scaled:scale"))
   if (!withbias) PVM$svms <- trainSVM(y=y, K=K, lambda=lambda, loss=loss, class.weights=grid, scaled=scaled, kernel=NULL, kpar=NULL,  keepdt=FALSE, ...)
   else {
     if (k!=2) stop("Currrently PVM with bias coefficients only works for classification problems with 2 classes\n")

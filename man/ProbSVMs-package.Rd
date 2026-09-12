@@ -27,8 +27,8 @@
 \tabular{ll}{
 Package: \tab ProbSVMs\cr
 Type: \tab Package\cr
-Version: \tab 0.1-0\cr
-Date: \tab 2026-06-22\cr
+Version: \tab 0.2-0\cr
+Date: \tab 2026-09-13\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
@@ -43,9 +43,8 @@ some empirical evidence suggesting that the later often gives more reliable resu
 these two variants are equivalent.
 
 In problems with more than two classes currently \pkg{ProbSVMs} only implements PVMs based on classification rules derived from weighted kernel-based SVMs without
-bias terms. In two-class problems both rules with (default) or without bias terms can be used. In problems
-with more than two classes dropping the bias terms has some computational advantages, and it has been argued that it should not have a noticable impact on
-statistical performance (see references [2] and [3] for further discussion).
+bias terms. In two-class problems both rules with or without (default) bias terms can be used. It can be shown that dropping bias terms in kernel-based SVMs has 
+computational advantages, and it has been argued that it should not have a noticable impact on statistical performance (see references [2] and [3] for further discussion).
 
 In adition, \pkg{ProbSVMs} also implements Duarte Silva's adaptation (see reference [3]) of Dogan, Glasmachers and Igel' s efficient training
 algorithm (see reference [1]) for 'all-in-one' multiclass kernel-based SVMs without bias terms. While an original implementation of this
@@ -113,6 +112,10 @@ print(iris$Species)
 print(WWpred==iris$Species)
 
 # Estimate class probabilities based on the WW loss
+
+set.seed(1)  # Fix the seed in order to get reproducible results
+             # (given the the building ot the grid matrix has a random component)
+
 
 WWpvm <- trainPVM(iris[,1:4],iris$Species,loss="WW")
 WWprob <- predict(WWpvm,newdata=iris[,1:4],trndt="newdata")

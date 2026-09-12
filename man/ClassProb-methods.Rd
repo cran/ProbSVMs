@@ -149,7 +149,7 @@ trdata <- iris[c(1:40,51:90,101:140),1:4]
 trSpecies <- iris$Species[c(1:40,51:90,101:140)]
 evaldata <- iris[c(41:50,91:100,141:150),1:4]
 WWpvm1 <- trainPVM(trdata,trSpecies)
-WWprob1 <- predict(WWpvm1,newdata=evaldata,trndt=trdata)
+WWprob1 <- predict(WWpvm1,newdata=evaldata)
 
 plot(WWprob1, projecton="DiscFact", trdata=trdata,  newdata=evaldata, grouping=trSpecies)
 plot(WWprob1, projecton="OrigDt", newdata=evaldata)

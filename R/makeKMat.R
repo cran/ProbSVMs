@@ -12,11 +12,17 @@ makeKMat <- function(dt1, dt2=NULL, kernel=c("rbfdot","vanilladot","polydot"), k
 
 makeKMat0 <- function(dt1, dt2=NULL, kernel=c("rbfdot","vanilladot","polydot"), kpar=list(sigma = "d2median"))
 {
-
   kernel <- match.arg(kernel)
   if (!is.matrix(dt1) && !is.data.frame(dt1)) stop("Wrong type for argument dt1")
-  if (!is.null(dt2) && !is.matrix(dt2) && !is.data.frame(dt2)) stop("Wrong type for argument dt2")
-  if (!is.matrix(dt1))  dt1 <- as.matrix(dt1)
+  if (!is.null(dt2) && !is.matrix(dt2) && !is.data.frame(dt2))
+#    stop("Wrong type for argument dt2")
+  {
+      if (!is.numeric(dt2) && is.integer(dt2)) stop("Wrong type for argument dt2\n")
+      else dt2 <- matrix(dt2,nrow=1)
+  }
+#  if (!is.matrix(dt1))  dt1 <- as.matrix(dt1)
+  if (is.data.frame(dt1))  dt1 <- as.matrix(dt1)
+  if (!is.matrix(dt1))  dt1 <- matrix(dt1,nrow=1)
   if (!is.null(dt2) && !is.matrix(dt2))  dt2 <- as.matrix(dt2)
 
   if  (kernel=="rbfdot") {

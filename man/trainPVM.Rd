@@ -12,8 +12,7 @@ with different class-weight specifications.
 
 \usage{
 
-trainPVM(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"),
-         withbias=(length(levels(y))==2),
+trainPVM(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"), withbias=FALSE,
            kernel=c("rbfdot","vanilladot","polydot"), kpar=list(sigma="d2median"),
          C=0.25, lambda=NULL, tunex=x, tuney=y, tuneK=K,
          grid=NULL, dpiinv=ceiling(sqrt(length(y))/0.2), keepdt=TRUE, \dots )
@@ -25,9 +24,9 @@ trainPVM(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"),
 
   \item{y}{a factor describing the response vector, with one label by observation.}
 
-  \item{scaled}{A logical flag indicating wheter or not the variables should be scaled to unit variance.}
+  \item{scaled}{a logical flag indicating wheter or not the variables should be scaled to unit variance.}
 
-  \item{K}{A symmetrix kernel matrix. When equal to NULL, the training data should be given by argument \code{x} and the
+  \item{K}{a symmetrix kernel matrix. When equal to NULL, the training data should be given by argument \code{x} and the
     kernel matrix is computed from it, and from the values of arguments \code{kernel} and \code{kpar}. When K is not NULL,
     it is assumed to be equal to a pre-computed kernel matrix and the arguments \code{x}, \code{kernel}, and \code{kpar} are ignored.}
 
@@ -36,8 +35,7 @@ trainPVM(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"),
     In two-class problems these two losses are equivalent, and also equivalent to the classical hinge loss.}
 
   \item{withbias}{a logical flag indicating if a bias term (intercept) should be included in the classification rule. For problems with
-    more than two classes, currently only rules without bias terms are implemented. However, in two-class problems the default is to use rules
-    with a bias term.}
+    more than two classes, currently only rules without bias terms are implemented.} 
 
   \item{kernel}{the kernel function used for training and prediction.
     Currentlty this argument can be set to one of the following strings:
@@ -59,7 +57,7 @@ trainPVM(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"),
       \item \code{sigma}: inverse kernel width for the Radial Basis kernel function \dQuote{rbfdot}.
         Either a numeric value or one of the strings \dQuote{d2median} (default), \dQuote{d2q01q09mean"},
         or \dQuote{"d2q01q09hmean"}.  In the three later cases this value is computed automatically, from the
-        distribution of all euclidean distances between \code{dt1}  observation pairs. 
+        distribution of all euclidean distances between \code{dt1}  observation pairs.
         See \code{\link{GetrbfdotSigPar}} for details.
 
       \item \code{degree, scale, offset}: for the Polynomial kernel \dQuote{polydot}
@@ -84,7 +82,7 @@ trainPVM(x=NULL, y, scaled=TRUE, K=NULL, loss=c("WW","LLW"),
   \item{tuney}{a factor describing the response vector (with one label by observation) used to tune the hyper-parameters
      \code{C} and \code{lambda}. It is ignored if none of these arguments is set to the string \dQuote{tuneit}.}
 
-  \item{tuneK}{a kernel matrix based on the trainining data (columns), and the data used (rows) for tuning the hyper-parameters \code{C} and \code{lambda}. 
+  \item{tuneK}{a kernel matrix based on the trainining data (columns), and the data used (rows) for tuning the hyper-parameters \code{C} and \code{lambda}.
   It is ignored if none of these arguments is set to the string \dQuote{tuneit}. When set to a non-NULL value overrides the value of argument \code{tunex}.}
 
   \item{grid}{A matrix with the class-weight specifications used to train the PVM. The rows correspond to different specifications, and the columns
@@ -115,8 +113,8 @@ some empirical evidence suggesting that the later often gives more reliable resu
 these two variants are equivalent.
 
 In problems with more than two classes currently trainPVM only implements PVMs based on classification rules derived from weighted kernel-based SVMs without
-bias terms. In two-class problems rules with (default) or without bias terms can be used, with this choice controled by the argument \code{with bias}. In problems
-with more than two classes dropping the bias terms has some computational advantages, and it has been argued that it should not have a noticable impact on
+bias terms. In two-class problems rules with or without (default) bias terms can be used, with this choice controled by the argument \code{with bias}. It can be shown
+that in kernel-based SVMs dropping the bias terms has some computational advantages, and it has been argued that it should not have a noticable impact on
 statistical performance (see references [1] and [2] for further discussion).
 
 The amount of regularization provided by the underlying SVMs is controled by the value of the hyper-paramters \code{C} or \code{lambda}. While \code{C} (the
@@ -140,19 +138,19 @@ from \dQuote{PVM} objects, and data frames or Kernel matrices of new (or trainin
 An object inheriting from class \dQuote{PVM} is a list containing at least the following components:
 
     \describe{
-    
+
       \item{nclasses}{the number of different classess.}
-                         
+
       \item{kernel}{the value of argument \code{kernel} in the call to \code{trainPVM}.}
-      
+
       \item{kpar}{the value of argument \code{kpar} in the call to \code{trainPVM}.}
-      
+
       \item{grid}{the grid matrix with the class-weight specifications used to train the PVM.}
 
       \item{svms}{a list with as many components as the number of different weighted SVMs trained.
-       Each component of this list is an object of class \code{kernelSVM} (if argument \code{withbias} is FALSE) or class 
-       \code{kernelksvms} (if argument \code{withbias} is TRUE) containing the trained SVM for a particular weight specification.} 
-       
+       Each component of this list is an object of class \code{kernelSVM} (if argument \code{withbias} is FALSE) or class
+       \code{kernelksvms} (if argument \code{withbias} is TRUE) containing the trained SVM for a particular weight specification.}
+
      }
 
   }
@@ -177,6 +175,9 @@ In \emph{Proceedings of the 7th European Symposium on Artificial Neural Networks
 }
 
 \examples{
+
+set.seed(1)  # Fix the seed in order to get reproducible results
+             # (given the the building ot the grid matrix has a random component)
 
 \donttest{
 
@@ -222,11 +223,44 @@ trdata <- crabs[trind,10:14]
 trgrp <- crabs$grp[trind]
 evaldata <- crabs[evalind,10:14]
 WWpvm1 <- trainPVM(trdata,trgrp)
-WWprob1 <- predict(WWpvm1,newdata=evaldata,trndt=trdata)
+WWprob1 <- predict(WWpvm1,newdata=evaldata)
 
 plot(WWprob1, type="stckdbarplt")
 WWprob1
 
+
+## Repeat the analysis by using a pre-computed kernel matrix given by the K argument
+## (Note: this is recommended in multiple analysis based on the same data, in order
+## to avoid uncessary repeated evalutions of the kernel funtion
+
+set.seed(1)  # To ensure that the results agree with the previous analysis 
+             # (i.e. forcing the same grid matrix)
+
+# All data as training data
+
+  GramMat <- makeKMat(scale(crabs[,10:14],center=FALSE),kernel="rbfdot",kpar=list(sigma="d2median"))
+  # Gram matrix, with sigma automatically adjusted to the scaled training data
+
+  WWpvm2 <- trainPVM(K=GramMat,y=crabs$grp,)
+  WWprob2 <- predict(WWpvm2,newdata=GramMat,newdataasKmat=TRUE)
+  plot(WWprob2, type="stckdbarplt")
+
+# Split 45 observations per group for training and 5 observations per group for prediction
+
+  scltrdata <- scale(crabs[trind,10:14],center=FALSE)
+  sclevaldata <- scale(crabs[evalind,10:14],center=FALSE,scale=attr(scltrdata,"scaled:scale"))
+
+  GramMat <- makeKMat(scltrdata,kernel="rbfdot",kpar=list(sigma="d2median"))
+  # Gram matrix, with sigma automatically adjusted to the scaled training data
+  trnevalKernMat <- makeKMat(scltrdata,sclevaldata,kernel="rbfdot",kpar=list(sigma="d2median"))
+  #Kernel matrix betwenn the (commonly scaled) training and evaluation data
+
+  WWpvm3 <- trainPVM(K=GramMat,y=crabs$grp[trind])
+  WWprob3 <- predict(WWpvm3,newdata=trnevalKernMat,newdataasKmat=TRUE)
+  plot(WWprob3, type="stckdbarplt")
+
+
 }
 
 }
+

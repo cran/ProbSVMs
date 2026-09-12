@@ -100,7 +100,7 @@ trainSVM(x=NULL, y, class.weights=rep(1.,length(levels(y))), scaled=TRUE, K=NULL
 
 \code{trainSVM} trains multiclass kernel-based (possibly weighted) Supported Vector Machines (SVMs) without bias terms.
 It implements Duarte Silva's adaptation (see reference [3]) of Dogan, Glasmachers and Igel' s efficient training
-algorithm (see reference [1]) for 'all-in-one' multiclass SVMs. In SVM problems with more than two classes, dropping
+algorithm (see reference [1]) for 'all-in-one' multiclass SVMs. It can be shown that in kernel-based SVMs dropping
 bias terms has considerable computational advantages, and it has been argued that the resulting rules have essentially
 the same statistcal properties (at least asymptotically for universal kernels) as the corresponding
 rules with bias terms. See references [2], [3] and [5] for further discussion.
@@ -216,6 +216,7 @@ In \emph{Proceedings of the 7th European Symposium on Artificial Neural Networks
 ## the rear width (RW). In the  analysis provided, we created four classes
 # by crossing the sex and sp levels.
 
+
 library(MASS)
 data(crabs)
 
@@ -284,25 +285,32 @@ print(WWpred3==crabs$grp[evalind])
 
 
 ## Repeat the analysis by using a pre-computed kernel matrix given by the K argument
-## (note: this is recommended in multiple analysis based on the same data, in order
+## (Note: this is recommended in multiple analysis based on the same data, in order
 ## to avoid uncessary repeated evalutions of the kernel funtion
-
-GramMat <- makeKMat(scale(crabs[,10:14],center=FALSE),kernel="rbfdot",kpar=list(sigma="d2median"))
-    # Gram matrix, with sigma automatically adjusted to the scaled training data
 
 # All data as training data
 
-WWsvm4 <- trainSVM(K=GramMat,y=crabs$grp,C="tuneit")
-WWpred4 <- predict(WWsvm4,KMat=GramMat)
-WWpred4
-print(WWpred4==crabs$grp)
-
+  GramMat <- makeKMat(scale(crabs[,10:14],center=FALSE),kernel="rbfdot",kpar=list(sigma="d2median"))
+  # Gram matrix, with sigma automatically adjusted to the scaled training data
+  
+  WWsvm4 <- trainSVM(K=GramMat,y=crabs$grp,C="tuneit")
+  WWpred4 <- predict(WWsvm4,KMat=GramMat)
+  print(WWpred4==crabs$grp)
+  
 # Split 45 observations per group for training and 5 observations per group for prediction
 
-WWsvm5 <- trainSVM(K=GramMat[trind,trind],y=crabs$grp[trind],C="tuneit")
-WWpred5 <- predict(WWsvm5,KMat=GramMat[evalind,trind])
-WWpred5
-print(WWpred5==crabs$grp[evalind])
+  scltrdata <- scale(crabs[trind,10:14],center=FALSE) 
+  sclevaldata <- scale(crabs[evalind,10:14],center=FALSE,scale=attr(scltrdata,"scaled:scale")) 
+  
+  GramMat <- makeKMat(scltrdata,kernel="rbfdot",kpar=list(sigma="d2median"))
+  # Gram matrix, with sigma automatically adjusted to the scaled training data
+  trnevalKernMat <- makeKMat(scltrdata,sclevaldata,kernel="rbfdot",kpar=list(sigma="d2median"))
+  #Kernel matrix betwenn the (commonly scaled) training and evaluation data
+    
+  WWsvm5 <- trainSVM(K=GramMat,y=crabs$grp[trind],C="tuneit")
+  WWpred5 <- predict(WWsvm5,KMat=trnevalKernMat)
+  print(WWpred5==crabs$grp[evalind])
+
 
 }
 

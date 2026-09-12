@@ -1,0 +1,29 @@
+########## Version 0.2.0 (September 2026) ###############
+
+The following changes were made in Version 0.2.0 of R package ProbSVMs:
+ 
+1) The default value of the hyper-parameter eta in the predictPVM function
+   changed from 15 to the string adjtogrid. With this default the value of
+   eta is automatically computed from the grid specification in such way that
+   it is large enough to ensure that the undesirable deviations dominate the 
+   desirable ones in the objective to be minimized. This cond ition is necessary
+   to inforce the consistency properties of the resulting PVM estimators.
+
+2) The default value of the argument withbias in in the trainPVM and trainSVM
+   functions changed from length(levels(y))==2 to FALSE. This way in all problems
+   the default is consistently not include bias terms, instead of using bias
+   terms by defaul to 2-class problems and dropping them for problems with more
+   than two groups, as it was the case in version 0.1.0.  
+
+3) A bug in the normalization (standardization) routine of functions predictPVM 
+   and predictSVM was corrected. In version 0.1.0 when different data was used for
+   prediction/estimation than the data used for training, the normalization 
+   (standardization) used in the newdata did not always ensured that the same
+   scaling constants was used for the training and the newdata. This problem
+   was corrected in version 0.2.0 were the same constants used for normalizing
+   the training data ara always used for normalizing any newdata used for prediction
+   or estimation.        
+
+4) In the function predictPVM for problems with two classes the LP based boubded-variables
+   simplex algorithm was replaced by an equivalent, but faster, optimization algorithm
+   specialized for two-class problems.    

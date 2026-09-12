@@ -1,7 +1,7 @@
 Package: ProbSVMs
 Type: Package
 Title: Probabilistic Support Vector Machines
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: person(given = c("A. Pedro"), family = c("Duarte Silva"), role = c("aut", "cre"), email = "psilva@ucp.pt")
 Author: A. Pedro Duarte Silva [aut, cre]
 Maintainer: A. Pedro Duarte Silva <psilva@ucp.pt>
@@ -12,6 +12,6 @@ Depends: R (>= 3.5.0), Rcpp (>= 1.0.4.6)
 LinkingTo: Rcpp, RcppArmadillo (>= 15.2.6-1)
 Imports: lpSolveAPI, kernlab, ggplot2, MASS, stats, reshape2
 NeedsCompilation: yes
-Packaged: 2026-06-22 09:13:01 UTC; antonio
+Packaged: 2026-09-12 23:26:40 UTC; antonio
 Repository: CRAN
-Date/Publication: 2026-06-25 16:00:20 UTC
+Date/Publication: 2026-09-12 23:50:02 UTC

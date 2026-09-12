@@ -33,10 +33,12 @@
     observations, while  its columns correspond to training data
     observations. When not NULL overrides the \code{newdata} argument.}
 
-  \item{trndt}{either a matrix or data frame with the training data (with
+  \item{trndt}{either a NULL value,  a matrix or data frame with the training data (with
     observations in rows and variables in columns) or the string
-    \dQuote{newdata}, if (and only if) SVM predictions are to be found
-    for the same data as the one used for training.}
+    \dQuote{newdata}, if (and only if) class probabilites are to be computed
+    for the same data as the one used for training. When equal to NULL the training data
+    will be retrieved from the value of argument object. The value of this argument is
+    ignored when argument KMat is not NULL.}
 
 }
 
